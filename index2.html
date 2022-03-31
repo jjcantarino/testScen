@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <title>Winnerspedia</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+      <style>
+
+         * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+         }
+
+         .container {
+             display: flex;
+             flex-direction: column;
+             flex-wrap: nowrap;
+             justify-content: flex-start;
+             align-items: stretch;
+             align-content: stretch;
+         }
+
+         .boxes {
+            display: flex;
+            flex-wrap: wrap;
+            max-height: 100vh;
+
+            width:90%;
+            max-width: 1200px;
+            margin: 0 auto;
+         }
+
+         .box {
+            box-sizing: border-box;
+            width: 50%;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+         }
+
+         .green { background: green; 
+                     justify-content: right;
+         }
+         .blue { background: blue;}
+         .pink {background: pink; justify-content: right }
+         .yellow { background: yellow; }
+
+
+
+         html{
+            background-color : #f8f8ff;
+         }
+         .floatRight{
+            float: right;
+         }
+         .rightAlignText{
+            text-align: right;
+         }
+         .tableStandings{
+            cursor: pointer;
+         }
+         tr:hover{
+              background-color: #add8e6;
+            }
+         tr.selected{
+           background-color: #3ca1c3;
+         }
+      </style>
+   </head>
+   <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <a class="navbar-brand" href="#">Navbar</a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+         </button>
+         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+               <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+               <a class="nav-item nav-link" href="#">Features</a>
+               <a class="nav-item nav-link" href="#">Pricing</a>
+               <a class="nav-item nav-link disabled" href="#">Disabled</a>
+            </div>
+         </div>
+      </nav>
+
+<div class="container">
+   <div class="boxes">
+      <div class="box green" id="tableDiv"></div>
+      <div class="box blue">
+         <!--<div style="flex:0 1 60%;min-height:100%;max-width:60%;">
+            <div style="margin-top: 50vh;">
+             -->  <canvas id="standingsBarCanvas" height="128vw" style="margin-top: 0%"></canvas>
+           <!-- </div>
+         </div>-->
+      </div>
+   </div>
+   <div class="boxes">
+
+      <div class="box pink"> 
+         <div style="width: 60%; height:100%">
+            <canvas id="doughnutCanvas"></canvas>
+         </div>
+      </div>
+      <div class="box yellow">
+      </div>
+   </div>
+</div>
+<script>
+   var json = '{"Fnatic TQ": {"1": 1024, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "total": 1024, "1%": "100.00", "2%": "0.00", "3%": "0.00", "4%": "0.00", "5%": "0.00", "6%": "0.00", "7%": "0.00", "8%": "0.00", "9%": "0.00", "10%": "0.00"}, "Bar\u00e7a eSports": {"1": 0, "2": 1024, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "total": 1024, "2_ties": {"total": 128, "2": {"Bar\u00e7a eSports,G2 Arctic": 128}}, "1%": "0.00", "2%": "100.00", "3%": "0.00", "4%": "0.00", "5%": "0.00", "6%": "0.00", "7%": "0.00", "8%": "0.00", "9%": "0.00", "10%": "0.00"}, "BISONS ECLUB": {"1": 0, "2": 0, "3": 194, "4": 224, "5": 240, "6": 96, "7": 78, "8": 192, "9": 0, "10": 0, "total": 1024, "8_untied": {"total": 112, "totalWin": 0, "totalLoss": 112, "matchups": {"Giants (Spanish Team)": {"total": 48, "win": 0, "loss": 48}, "KOI (Spanish Team)": {"total": 64, "win": 0, "loss": 64}}}, "7_ties": {"total": 48, "2": {"BISONS ECLUB,Team Heretics": 48}}, "6_ties": {"total": 52, "3": {"BISONS ECLUB,Giants (Spanish Team),Team Heretics": 22, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6}, "2": {"BISONS ECLUB,Team Heretics": 12, "BISONS ECLUB,Movistar Riders": 6}}, "5_ties": {"total": 196, "4": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2}, "3": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 12, "BISONS ECLUB,Movistar Riders,Team Heretics": 24, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders": 24, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders": 24, "BISONS ECLUB,G2 Arctic,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4}, "2": {"BISONS ECLUB,Movistar Riders": 6, "BISONS ECLUB,Team Heretics": 12}}, "4_ties": {"total": 174, "5": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4}, "4": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders,Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders": 8, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders": 8}, "3": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 10, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4}, "2": {"BISONS ECLUB,Team Heretics": 12}}, "5_untied": {"total": 38, "totalWin": 10, "totalLoss": 28, "matchups": {"Movistar Riders": {"total": 6, "win": 6, "loss": 0}, "KOI (Spanish Team)": {"total": 16, "win": 0, "loss": 16}, "Giants (Spanish Team)": {"total": 12, "win": 0, "loss": 12}, "G2 Arctic": {"total": 4, "win": 4, "loss": 0}}}, "3_untied": {"total": 40, "totalWin": 40, "totalLoss": 0, "matchups": {"G2 Arctic": {"total": 40, "win": 40, "loss": 0}}}, "3_ties": {"total": 134, "3": {"BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 32, "BISONS ECLUB,G2 Arctic,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 24, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 4}, "4": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 10, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}, "5": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "2": {"BISONS ECLUB,Team Heretics": 12}}, "7_untied": {"total": 24, "totalWin": 0, "totalLoss": 24, "matchups": {"Giants (Spanish Team)": {"total": 12, "win": 0, "loss": 12}, "KOI (Spanish Team)": {"total": 12, "win": 0, "loss": 12}}}, "6_untied": {"total": 32, "totalWin": 8, "totalLoss": 24, "matchups": {"Giants (Spanish Team)": {"total": 12, "win": 0, "loss": 12}, "KOI (Spanish Team)": {"total": 12, "win": 0, "loss": 12}, "Movistar Riders": {"total": 6, "win": 6, "loss": 0}, "G2 Arctic": {"total": 2, "win": 2, "loss": 0}}}, "4_untied": {"total": 30, "totalWin": 2, "totalLoss": 28, "matchups": {"G2 Arctic": {"total": 2, "win": 2, "loss": 0}, "KOI (Spanish Team)": {"total": 16, "win": 0, "loss": 16}, "Giants (Spanish Team)": {"total": 12, "win": 0, "loss": 12}}}, "1%": "0.00", "2%": "0.00", "3%": "18.95", "4%": "21.88", "5%": "23.44", "6%": "9.38", "7%": "7.62", "8%": "18.75", "9%": "0.00", "10%": "0.00"}, "G2 Arctic": {"1": 0, "2": 128, "3": 592, "4": 206, "5": 78, "6": 18, "7": 2, "8": 0, "9": 0, "10": 0, "total": 1024, "3_ties": {"total": 384, "2": {"G2 Arctic,Movistar Riders": 40, "G2 Arctic,KOI (Spanish Team)": 64, "G2 Arctic,Giants (Spanish Team)": 48}, "3": {"G2 Arctic,KOI (Spanish Team),Movistar Riders": 32, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 32, "G2 Arctic,Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Team Heretics": 24, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 24, "G2 Arctic,Giants (Spanish Team),Team Heretics": 16}, "4": {"G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 10, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2}, "5": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}}, "4_untied": {"total": 88, "totalWin": 0, "totalLoss": 88, "matchups": {"BISONS ECLUB": {"total": 40, "win": 0, "loss": 40}, "Team Heretics": {"total": 48, "win": 0, "loss": 48}}}, "2_ties": {"total": 128, "2": {"Bar\u00e7a eSports,G2 Arctic": 128}}, "4_ties": {"total": 118, "4": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders,Team Heretics": 8, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders": 8, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders": 8, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "3": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "G2 Arctic,Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4}, "2": {"G2 Arctic,Movistar Riders": 2}, "5": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4}}, "6_untied": {"total": 12, "totalWin": 0, "totalLoss": 12, "matchups": {"Team Heretics": {"total": 8, "win": 0, "loss": 8}, "BISONS ECLUB": {"total": 4, "win": 0, "loss": 4}}}, "5_ties": {"total": 72, "3": {"BISONS ECLUB,G2 Arctic,Team Heretics": 4, "G2 Arctic,Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4}, "2": {"G2 Arctic,Movistar Riders": 4, "G2 Arctic,Giants (Spanish Team)": 8, "G2 Arctic,KOI (Spanish Team)": 8}, "4": {"BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2}}, "5_untied": {"total": 2, "totalWin": 0, "totalLoss": 2, "matchups": {"BISONS ECLUB": {"total": 2, "win": 0, "loss": 2}}}, "7_untied": {"total": 2, "totalWin": 0, "totalLoss": 2, "matchups": {"BISONS ECLUB": {"total": 2, "win": 0, "loss": 2}}}, "6_ties": {"total": 2, "2": {"G2 Arctic,Movistar Riders": 2}}, "1%": "0.00", "2%": "12.50", "3%": "57.81", "4%": "20.12", "5%": "7.62", "6%": "1.76", "7%": "0.20", "8%": "0.00", "9%": "0.00", "10%": "0.00"}, "KOI (Spanish Team)": {"1": 0, "2": 0, "3": 144, "4": 288, "5": 196, "6": 128, "7": 76, "8": 192, "9": 0, "10": 0, "total": 1024, "5_ties": {"total": 168, "3": {"Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 24, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 12, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders": 24, "KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4}, "4": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2}}, "5_untied": {"total": 28, "totalWin": 12, "totalLoss": 16, "matchups": {"Movistar Riders": {"total": 16, "win": 0, "loss": 16}, "BISONS ECLUB": {"total": 12, "win": 12, "loss": 0}}}, "6_untied": {"total": 56, "totalWin": 12, "totalLoss": 44, "matchups": {"Giants (Spanish Team)": {"total": 12, "win": 0, "loss": 12}, "Team Heretics": {"total": 12, "win": 0, "loss": 12}, "Movistar Riders": {"total": 12, "win": 0, "loss": 12}, "BISONS ECLUB": {"total": 12, "win": 12, "loss": 0}, "G2 Arctic": {"total": 8, "win": 0, "loss": 8}}}, "4_ties": {"total": 160, "4": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders": 8, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "3": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 4}, "5": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4}}, "3_ties": {"total": 96, "3": {"G2 Arctic,KOI (Spanish Team),Movistar Riders": 32, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team)": 32}, "5": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "4": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}}, "4_untied": {"total": 96, "totalWin": 16, "totalLoss": 80, "matchups": {"G2 Arctic": {"total": 64, "win": 0, "loss": 64}, "BISONS ECLUB": {"total": 16, "win": 16, "loss": 0}, "Movistar Riders": {"total": 16, "win": 0, "loss": 16}}}, "7_untied": {"total": 76, "totalWin": 64, "totalLoss": 12, "matchups": {"BISONS ECLUB": {"total": 64, "win": 64, "loss": 0}, "Movistar Riders": {"total": 12, "win": 0, "loss": 12}}}, "8_untied": {"total": 64, "totalWin": 0, "totalLoss": 64, "matchups": {"Movistar Riders": {"total": 64, "win": 0, "loss": 64}}}, "6_ties": {"total": 48, "2": {"KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),KOI (Spanish Team)": 12}, "3": {"BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6}}, "3_untied": {"total": 16, "totalWin": 16, "totalLoss": 0, "matchups": {"BISONS ECLUB": {"total": 16, "win": 16, "loss": 0}}}, "1%": "0.00", "2%": "0.00", "3%": "14.06", "4%": "28.12", "5%": "19.14", "6%": "12.50", "7%": "7.42", "8%": "18.75", "9%": "0.00", "10%": "0.00"}, "Giants (Spanish Team)": {"1": 0, "2": 0, "3": 164, "4": 272, "5": 216, "6": 136, "7": 92, "8": 144, "9": 0, "10": 0, "total": 1024, "5_ties": {"total": 180, "3": {"Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 24, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 12, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders": 24, "Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4}, "4": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 2, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2}, "2": {"Giants (Spanish Team),Team Heretics": 12}}, "5_untied": {"total": 24, "totalWin": 12, "totalLoss": 12, "matchups": {"KOI (Spanish Team)": {"total": 12, "win": 12, "loss": 0}, "Movistar Riders": {"total": 12, "win": 0, "loss": 12}}}, "6_ties": {"total": 80, "3": {"BISONS ECLUB,Giants (Spanish Team),Team Heretics": 22, "Giants (Spanish Team),Movistar Riders,Team Heretics": 22, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6}, "2": {"Giants (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),KOI (Spanish Team)": 12}}, "4_ties": {"total": 176, "4": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders": 8, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4}, "3": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team)": 6, "Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 10, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 4}, "5": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4}, "2": {"Giants (Spanish Team),Team Heretics": 8}}, "7_ties": {"total": 32, "2": {"Giants (Spanish Team),Team Heretics": 32}}, "8_untied": {"total": 48, "totalWin": 0, "totalLoss": 48, "matchups": {"Movistar Riders": {"total": 48, "win": 0, "loss": 48}}}, "6_untied": {"total": 20, "totalWin": 0, "totalLoss": 20, "matchups": {"Movistar Riders": {"total": 12, "win": 0, "loss": 12}, "G2 Arctic": {"total": 8, "win": 0, "loss": 8}}}, "7_untied": {"total": 12, "totalWin": 0, "totalLoss": 12, "matchups": {"Movistar Riders": {"total": 12, "win": 0, "loss": 12}}}, "3_ties": {"total": 128, "3": {"G2 Arctic,Giants (Spanish Team),Movistar Riders": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team)": 24, "G2 Arctic,Giants (Spanish Team),Team Heretics": 16, "Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 4}, "4": {"G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 10, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team)": 2}, "5": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}, "2": {"Giants (Spanish Team),Team Heretics": 8}}, "4_untied": {"total": 60, "totalWin": 0, "totalLoss": 60, "matchups": {"G2 Arctic": {"total": 48, "win": 0, "loss": 48}, "Movistar Riders": {"total": 12, "win": 0, "loss": 12}}}, "1%": "0.00", "2%": "0.00", "3%": "16.02", "4%": "26.56", "5%": "21.09", "6%": "13.28", "7%": "8.98", "8%": "14.06", "9%": "0.00", "10%": "0.00"}, "Movistar Riders": {"1": 0, "2": 0, "3": 170, "4": 262, "5": 228, "6": 98, "7": 138, "8": 128, "9": 0, "10": 0, "total": 1024, "4_ties": {"total": 162, "4": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,Movistar Riders,Team Heretics": 8, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders": 8, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders": 8, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "3": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6, "Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6, "G2 Arctic,Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4}, "5": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 24, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4}}, "6_untied": {"total": 34, "totalWin": 12, "totalLoss": 22, "matchups": {"Team Heretics": {"total": 12, "win": 0, "loss": 12}, "BISONS ECLUB": {"total": 6, "win": 0, "loss": 6}, "Giants (Spanish Team)": {"total": 12, "win": 12, "loss": 0}, "G2 Arctic": {"total": 4, "win": 0, "loss": 4}}}, "5_ties": {"total": 184, "3": {"BISONS ECLUB,Movistar Riders,Team Heretics": 24, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders": 24, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders": 24, "Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "G2 Arctic,Movistar Riders,Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Movistar Riders": 4}, "2": {"BISONS ECLUB,Movistar Riders": 6}, "4": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 12, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 2, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2}}, "4_untied": {"total": 64, "totalWin": 12, "totalLoss": 52, "matchups": {"G2 Arctic": {"total": 40, "win": 0, "loss": 40}, "Giants (Spanish Team)": {"total": 12, "win": 12, "loss": 0}, "Team Heretics": {"total": 12, "win": 0, "loss": 12}}}, "3_ties": {"total": 122, "3": {"G2 Arctic,KOI (Spanish Team),Movistar Riders": 32, "G2 Arctic,Movistar Riders,Team Heretics": 24, "G2 Arctic,Giants (Spanish Team),Movistar Riders": 24, "Giants (Spanish Team),Movistar Riders,Team Heretics": 4}, "4": {"G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2}, "5": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}}, "7_untied": {"total": 68, "totalWin": 48, "totalLoss": 20, "matchups": {"Giants (Spanish Team)": {"total": 48, "win": 48, "loss": 0}, "Team Heretics": {"total": 12, "win": 0, "loss": 12}, "BISONS ECLUB": {"total": 6, "win": 0, "loss": 6}, "G2 Arctic": {"total": 2, "win": 0, "loss": 2}}}, "8_untied": {"total": 48, "totalWin": 0, "totalLoss": 48, "matchups": {"Team Heretics": {"total": 48, "win": 0, "loss": 48}}}, "6_ties": {"total": 40, "3": {"Giants (Spanish Team),Movistar Riders,Team Heretics": 22, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders": 6}, "2": {"BISONS ECLUB,Movistar Riders": 6}}, "5_untied": {"total": 26, "totalWin": 12, "totalLoss": 14, "matchups": {"Team Heretics": {"total": 12, "win": 0, "loss": 12}, "Giants (Spanish Team)": {"total": 12, "win": 12, "loss": 0}, "G2 Arctic": {"total": 2, "win": 0, "loss": 2}}}, "3_untied": {"total": 12, "totalWin": 12, "totalLoss": 0, "matchups": {"Giants (Spanish Team)": {"total": 12, "win": 12, "loss": 0}}}, "1%": "0.00", "2%": "0.00", "3%": "16.60", "4%": "25.59", "5%": "22.27", "6%": "9.57", "7%": "13.48", "8%": "12.50", "9%": "0.00", "10%": "0.00"}, "Team Heretics": {"1": 0, "2": 0, "3": 224, "4": 224, "5": 224, "6": 128, "7": 128, "8": 96, "9": 0, "10": 0, "total": 1024, "5_ties": {"total": 192, "3": {"Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 24, "BISONS ECLUB,Movistar Riders,Team Heretics": 24, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,Team Heretics": 4, "G2 Arctic,Movistar Riders,Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4}, "4": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 2, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 2}, "2": {"BISONS ECLUB,Team Heretics": 12, "Giants (Spanish Team),Team Heretics": 12}}, "7_ties": {"total": 80, "2": {"BISONS ECLUB,Team Heretics": 48, "Giants (Spanish Team),Team Heretics": 32}}, "6_ties": {"total": 92, "3": {"BISONS ECLUB,Giants (Spanish Team),Team Heretics": 22, "Giants (Spanish Team),Movistar Riders,Team Heretics": 22, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6}, "2": {"BISONS ECLUB,Team Heretics": 12, "KOI (Spanish Team),Team Heretics": 12, "Giants (Spanish Team),Team Heretics": 12}}, "4_ties": {"total": 188, "4": {"Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 12, "BISONS ECLUB,Giants (Spanish Team),Movistar Riders,Team Heretics": 12, "BISONS ECLUB,KOI (Spanish Team),Movistar Riders,Team Heretics": 12, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Movistar Riders,Team Heretics": 8, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "5": {"BISONS ECLUB,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4}, "3": {"Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "KOI (Spanish Team),Movistar Riders,Team Heretics": 6, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 10, "BISONS ECLUB,KOI (Spanish Team),Team Heretics": 6, "G2 Arctic,Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Team Heretics": 4, "G2 Arctic,Giants (Spanish Team),Team Heretics": 4, "G2 Arctic,KOI (Spanish Team),Team Heretics": 4}, "2": {"BISONS ECLUB,Team Heretics": 12, "Giants (Spanish Team),Team Heretics": 8}}, "5_untied": {"total": 24, "totalWin": 24, "totalLoss": 0, "matchups": {"Movistar Riders": {"total": 12, "win": 12, "loss": 0}, "KOI (Spanish Team)": {"total": 12, "win": 12, "loss": 0}}}, "7_untied": {"total": 48, "totalWin": 48, "totalLoss": 0, "matchups": {"Movistar Riders": {"total": 48, "win": 48, "loss": 0}}}, "6_untied": {"total": 12, "totalWin": 12, "totalLoss": 0, "matchups": {"Movistar Riders": {"total": 12, "win": 12, "loss": 0}}}, "4_untied": {"total": 12, "totalWin": 12, "totalLoss": 0, "matchups": {"Movistar Riders": {"total": 12, "win": 12, "loss": 0}}}, "3_ties": {"total": 140, "3": {"G2 Arctic,Movistar Riders,Team Heretics": 24, "BISONS ECLUB,G2 Arctic,Team Heretics": 24, "G2 Arctic,Giants (Spanish Team),Team Heretics": 16, "Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,Giants (Spanish Team),Team Heretics": 4}, "4": {"G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 10, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Team Heretics": 10, "G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 2, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Team Heretics": 2}, "5": {"G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Team Heretics": 4, "BISONS ECLUB,G2 Arctic,Giants (Spanish Team),Movistar Riders,Team Heretics": 4, "BISONS ECLUB,G2 Arctic,KOI (Spanish Team),Movistar Riders,Team Heretics": 4}, "6": {"BISONS ECLUB,G2 Arctic,Giants (Spanish Team),KOI (Spanish Team),Movistar Riders,Team Heretics": 8}, "2": {"BISONS ECLUB,Team Heretics": 12, "Giants (Spanish Team),Team Heretics": 8}}, "3_untied": {"total": 12, "totalWin": 12, "totalLoss": 0, "matchups": {"Movistar Riders": {"total": 12, "win": 12, "loss": 0}}}, "1%": "0.00", "2%": "0.00", "3%": "21.88", "4%": "21.88", "5%": "21.88", "6%": "12.50", "7%": "12.50", "8%": "9.38", "9%": "0.00", "10%": "0.00"}, "MAD Lions Madrid": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 896, "10": 128, "total": 1024, "10_untied": {"total": 128, "totalWin": 0, "totalLoss": 128, "matchups": {"UCAM Tokiers": {"total": 128, "win": 0, "loss": 128}}}, "1%": "0.00", "2%": "0.00", "3%": "0.00", "4%": "0.00", "5%": "0.00", "6%": "0.00", "7%": "0.00", "8%": "0.00", "9%": "87.50", "10%": "12.50"}, "UCAM Tokiers": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 128, "10": 896, "total": 1024, "9_untied": {"total": 128, "totalWin": 128, "totalLoss": 0, "matchups": {"MAD Lions Madrid": {"total": 128, "win": 128, "loss": 0}}}, "1%": "0.00", "2%": "0.00", "3%": "0.00", "4%": "0.00", "5%": "0.00", "6%": "0.00", "7%": "0.00", "8%": "0.00", "9%": "12.50", "10%": "87.50"}}';
+   var doughnut;
+   var standingsBar;
+   var selectedBar;
+   $(document).ready(
+      function(){
+         json = JSON.parse(json);
+         var jData = []
+         let i = 1
+         for (const team in json){
+            let row = {'Position': i++,'Team':team};
+            jData.push(row);   
+         }
+
+         
+         ConvertToTable(jData);
+         createDoughnut();
+         createBar();
+
+   });
+
+function ConvertToTable(jData) {
+  var arrJSON = typeof jData != 'object' ? JSON.parse(jData) : jData;
+  var $table = $('<table/>').addClass("floatRight").addClass("tableStandings");
+  var $headerTr = $('<tr/>');
+  
+  for (var index in arrJSON[0]) {
+    $headerTr.append($('<th/>').html(index).addClass("rightAlignText"));
+  }
+  $table.append($headerTr);
+  for (var i = 0; i < arrJSON.length; i++) {
+   let team = arrJSON[i]['Team']
+   let pos = 0 + i;
+   var $tableTr = $("<tr/>", {
+      click: function() {
+         $('.tableStandings tr.selected').removeClass('selected');
+         $(this).toggleClass("selected")
+         updateBars(team);
+      }
+   })
+   $tableTr.append($('<td/>').html(arrJSON[i]['Position']))
+   $tableTr.append($('<td/>').html(arrJSON[i]['Team']).addClass("rightAlignText"));
+    $table.append($tableTr);
+  }
+  $('#tableDiv').append($table);
+}
+
+function updateDoughnut(team, pos){
+   let dataset = []
+   dataset[0] = json[team]['' + pos];
+   dataset[1] = json[team][pos + '_ties']  ? json[team][pos + '_ties']['total'] : 0; 
+   dataset[2] = json[team][pos + '_untied'] ? json[team][pos + '_untied']['totalWin'] : 0; 
+   dataset[3] = json[team][pos + '_untied'] ? json[team][pos + '_untied']['totalLoss'] : 0; 
+   doughnut.data.datasets[0].data = dataset;
+   doughnut.update()
+   
+}
+
+
+function updateBars(team){
+
+   let dataset = []
+   dataset[0] = json[team]['1%'];
+   dataset[1] = json[team]['2%'];
+   dataset[2] = json[team]['3%'];
+   dataset[3] = json[team]['4%'];
+   dataset[4] = json[team]['5%'];
+   dataset[5] = json[team]['6%'];
+   dataset[6] = json[team]['7%'];
+   dataset[7] = json[team]['8%'];
+   dataset[8] = json[team]['9%'];
+   dataset[9] = json[team]['10%'];
+
+   for (let idx = 0; idx < standingsBar.data.labels.length; idx ++ ){
+       standingsBar.data.labels[idx] = 'Position ' + (idx+1);
+   }
+   standingsBar.data.datasets[0].data = dataset;
+   standingsBar.data.datasets[0].label = team + ' % scenarios out of ' + json[team]['total'];
+   console.log(standingsBar)
+   standingsBar.update()
+   
+}
+
+
+function createDoughnut(){
+   var options = {
+    responsive:false,
+    maintainAspectRatio: false,
+     type: 'doughnut',
+     data: {
+       labels: ["Regular", "Ties", "Tiebreak - Won", "Tiebreak - Lost"],
+       datasets: [{
+         label: 'Number of',
+         data: [1,1,1,1],
+         backgroundColor: ["#90ee90", "#ffffe0", "#3ca1c3", "#ffcccb"]
+       }]
+     },
+     options: {
+       onClick: (e, activeEls) => {
+         let datasetIndex = activeEls[0].datasetIndex;
+         let dataIndex = activeEls[0].index;
+         let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+         let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+         let label = e.chart.data.labels[dataIndex];
+         
+       }
+     }
+   }
+
+   var ctx = document.getElementById('doughnutCanvas').getContext('2d');
+   doughnut = new Chart(ctx, options);
+ 
+}
+function createBar(){
+
+   var barOptions = {
+       responsive: false,
+       maintainAspectRatio: false,
+       type: 'bar',
+       data: {
+           labels: ["Position 1","Position 2","Position 3","Position 4","Position 5","Position 6","Position 7","Position 8","Position 9","Position 10"],
+           datasets: [
+               {
+                   label: "% of scenarios",
+                   data: [3, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                   backgroundColor: ["grey","grey","grey","grey","grey","grey","grey","grey","grey","grey"],
+                   hoverBackgroundColor: ["#3ca1c3"],
+                   barThickness: 20,
+                   grouped: false,
+               }]
+       },
+       options: {
+           title: {
+               display: true,
+               text: 'Team ajajajaja'
+           },
+         onHover: function(e) {
+            $("#standingsBarCanvas").css("cursor", e != undefined ? "pointer" : "default");
+      },
+       onClick: (e, activeEls) => {
+         if(activeEls[0] != undefined){
+            let datasetIndex = activeEls[0].datasetIndex;
+            let dataIndex = activeEls[0].index;
+            let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+            let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+            let label = e.chart.data.labels[dataIndex];
+
+            let position = label.split('Position ')[1];
+            let team = e.chart.data.datasets[0].label.split(' %')[0]
+            for (let i = 0 ; i < e.chart.data.datasets[0].backgroundColor.length; i++)
+               e.chart.data.datasets[0].backgroundColor[i] = "grey"
+            e.chart.data.datasets[0].backgroundColor[dataIndex] = "#3ca1c3"
+            standingsBar.update()
+            //e.chart.data.datasets[0].backgroundColor.forEach(elem=> elem = "grey");
+
+            updateDoughnut(team, position);
+         }
+         //alert("Clicked in...  " +  datasetLabel + " " + label + " " + value);
+       },
+          indexAxis: 'y',
+          legend: {
+              display: false
+          },
+          scales: {
+              x: {
+                  ticks: {
+                      display: false
+                  },
+                  grid: {
+                      display: false,
+                      borderColor: 'transparent',
+                  }
+              },
+              y: {
+                  ticks: {
+                      display: false
+                  },
+                  grid: {
+                      borderColor: 'transparent',
+                      display: false
+                  },
+              },
+          },
+          plugins: {
+              legend: {
+                  display: false,
+                  position: 'bottom',
+              },
+                datalabels: {
+                    color: '#fff',
+                    anchor: 'end',
+                    align: 'top',
+               }
+          }
+      }
+   }
+   var ctx2 = document.getElementById('standingsBarCanvas').getContext('2d');
+   standingsBar = new Chart(ctx2, barOptions);
+
+}
+</script>
+   </body>
+</html>
